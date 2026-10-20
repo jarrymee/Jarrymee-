@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jarrymee | รีวิวจากลูกค้า</title>
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f0ff;
+  color: #30234e;
+}
+
+main {
+  max-width: 560px;
+  margin: 25px auto;
+  padding: 18px;
+}
+
+.shop, .review, .form {
+  background: white;
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 15px #30234e0d;
+}
+
+.shop { text-align: center; }
+
+.logo { font-size: 48px; }
+
+h1 { margin: 8px 0; }
+
+.muted { color: #817795; }
+
+.stars {
+  color: #e5a52c;
+  font-size: 19px;
+}
+
+button {
+  border: 0;
+  border-radius: 12px;
+  padding: 13px 18px;
+  background: #7655c8;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0 14px;
+  border: 1px solid #ddd4f2;
+  border-radius: 10px;
+  font: inherit;
+}
+
+textarea { min-height: 90px; }
+
+label {
+  display: block;
+  font-weight: bold;
+}
+
+footer {
+  text-align: center;
+  color: #817795;
+  font-size: 12px;
+  padding: 15px;
+}
+</style>
+</head>
+
+<body>
+<main>
+
+  <section class="shop">
+    <div class="logo">💜</div>
+    <h1>Jarrymee</h1>
+    <p class="muted">ร้านของคุณ · บริการด้วยใจ ♡</p>
+    <div class="stars" id="average">★★★★★ 5.0 / 5</div>
+    <p id="count">รีวิว 2 รายการ</p>
+
+    <button onclick="document.getElementById('reviewForm').scrollIntoView({behavior:'smooth'})">
+      ✍🏻 เขียนรีวิว
+    </button>
+  </section>
+
+  <h2>รีวิวจากลูกค้า 💬</h2>
+  <section id="reviews"></section>
+
+  <section class="form" id="reviewForm">
+    <h2>เขียนรีวิวของคุณ</h2>
+
+    <form id="form">
+      <label for="name">ชื่อที่ใช้แสดง</label>
+      <input id="name" maxlength="40"
+        placeholder="กรอกชื่อของคุณ" required>
+
+      <label for="rating">ให้คะแนนร้าน</label>
+      <select id="rating">
+        <option value="5">★★★★★ 5 ดาว</option>
+        <option value="4">★★★★☆ 4 ดาว</option>
+        <option value="3">★★★☆☆ 3 ดาว</option>
+        <option value="2">★★☆☆☆ 2 ดาว</option>
+        <option value="1">★☆☆☆☆ 1 ดาว</option>
+      </select>
+
+      <label for="message">ข้อความรีวิว</label>
+      <textarea id="message" maxlength="500"
+        placeholder="เขียนความประทับใจ..." required></textarea>
+
+      <button type="submit">ส่งรีวิว</button>
+    </form>
+
+    <p class="muted" id="notice">
+      รีวิวนี้เป็นการทดลอง ยังไม่ได้บันทึกลงฐานข้อมูล
+    </p>
+  </section>
+
+  <footer>ขอบคุณที่แวะมาเยี่ยมชม 💜</footer>
+
+</main>
+
+<script>
+const reviews = [
+  {
+    name: "ลูกค้าตัวอย่าง",
+    rating: 5,
+    message: "บริการดี ประทับใจมากค่ะ 💜"
+  },
+  {
+    name: "ลูกค้าอีกท่าน",
+    rating: 5,
+    message: "ใช้งานง่าย ตอบไวมาก"
+  }
+];
+
+function render() {
+  const area = document.getElementById("reviews");
+  area.replaceChildren();
+
+  reviews.slice().reverse().forEach(r => {
+    const card = document.createElement("article");
+    card.className = "review";
+
+    const heading = document.createElement("h3");
+    heading.textContent = r.name;
+
+    const stars = document.createElement("div");
+    stars.className = "stars";
+    stars.textContent =
+      "★".repeat(r.rating) + "☆".repeat(5-r.rating);
+
+    const message = document.createElement("p");
+    message.textContent = r.message;
+
+    card.append(heading, stars, message);
+    area.append(card);
+  });
+
+  const avg = reviews.length
+    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    : 0;
+
+  document.getElementById("average").textContent =
+    "★".repeat(Math.round(avg)) +
+    "☆".repeat(5-Math.round(avg)) +
+    " " + avg.toFixed(1) + " / 5";
+
+  document.getElementById("count").textContent =
+    "รีวิว " + reviews.length + " รายการ";
+}
+
+document.getElementById("form").addEventListener("submit", e => {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value.trim();
+  const message = document.getElementById("message").value.trim();
+
+  if (!name || !message) return;
+
+  reviews.push({
+    name,
+    rating: Number(document.getElementById("rating").value),
+    message
+  });
+
+  render();
+  e.target.reset();
+
+  document.getElementById("notice").textContent =
+    "เพิ่มรีวิวในหน้าทดลองแล้ว แต่ยังไม่ได้บันทึกถาวร";
+});
+
+render();
+</script>
+</body>
+</html>
